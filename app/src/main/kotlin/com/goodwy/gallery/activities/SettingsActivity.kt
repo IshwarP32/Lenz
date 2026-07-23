@@ -63,26 +63,6 @@ class SettingsActivity : SimpleActivity() {
 //        )
         setupMaterialScrollListener(binding.settingsNestedScrollview, binding.settingsAppbar)
 
-        val iapList: ArrayList<String> = arrayListOf(productIdX1, productIdX2, productIdX3)
-        val subList: ArrayList<String> =
-            arrayListOf(
-                subscriptionIdX1, subscriptionIdX2, subscriptionIdX3,
-                subscriptionYearIdX1, subscriptionYearIdX2, subscriptionYearIdX3
-            )
-        val ruStoreList: ArrayList<String> =
-            arrayListOf(
-                productIdX1, productIdX2, productIdX4,
-                subscriptionIdX1, subscriptionIdX2, subscriptionIdX3,
-                subscriptionYearIdX1, subscriptionYearIdX2, subscriptionYearIdX3
-            )
-        PurchaseHelper().checkPurchase(
-            this@SettingsActivity,
-            iapList = iapList,
-            subList = subList,
-            ruStoreList = ruStoreList
-        ) { updatePro ->
-            if (updatePro) updatePro()
-        }
     }
 
     override fun onResume() {
@@ -92,14 +72,16 @@ class SettingsActivity : SimpleActivity() {
     }
 
     private fun setupSettingItems() {
-        setupPurchaseThankYou()
+        config.topAppBarColorIcon = false
+        config.topAppBarColorTitle = false
+        config.isUsingAccentColor = false
+
         setupCustomizeColors()
         setupTransparentBottomNavigationBar()
 
         setupManageIncludedFolders()
         setupManageExcludedFolders()
         setupManageHiddenFolders()
-        setupUseSpeechToText()
         setupHideGroupingBar()
         setupHideGroupingButton()
         setupShowHiddenItems()
@@ -252,22 +234,17 @@ class SettingsActivity : SimpleActivity() {
         }
     }
 
-    private fun setupPurchaseThankYou() = binding.apply {
-        settingsPurchaseThankYouHolder.beGoneIf(checkPro(false))
-        settingsPurchaseThankYouHolder.onClick = { launchPurchase() }
-    }
-
     private fun setupCustomizeColors() = binding.apply {
         settingsCustomizeColorsHolder.setOnClickListener {
             startCustomizationActivity(
-                showAccentColor = true,
+                showAccentColor = false,
                 isCollection = isCollection(),
-                productIdList= arrayListOf(productIdX1, productIdX2, productIdX3),
-                productIdListRu = arrayListOf(productIdX1, productIdX2, productIdX4),
-                subscriptionIdList = arrayListOf(subscriptionIdX1, subscriptionIdX2, subscriptionIdX3),
-                subscriptionIdListRu = arrayListOf(subscriptionIdX1, subscriptionIdX2, subscriptionIdX3),
-                subscriptionYearIdList = arrayListOf(subscriptionYearIdX1, subscriptionYearIdX2, subscriptionYearIdX3),
-                subscriptionYearIdListRu = arrayListOf(subscriptionYearIdX1, subscriptionYearIdX2, subscriptionYearIdX3),
+                productIdList = arrayListOf(),
+                productIdListRu = arrayListOf(),
+                subscriptionIdList = arrayListOf(),
+                subscriptionIdListRu = arrayListOf(),
+                subscriptionYearIdList = arrayListOf(),
+                subscriptionYearIdListRu = arrayListOf(),
                 showAppIconColor = true
             )
         }
@@ -414,15 +391,6 @@ class SettingsActivity : SimpleActivity() {
             runOnUiThread {
                 binding.settingsManageHiddenFoldersSize.text = it.size.toString()
             }
-        }
-    }
-
-    private fun setupUseSpeechToText() = binding.apply {
-        settingsUseSpeechToText.isChecked = config.useSpeechToText
-        settingsUseSpeechToTextHolder.setOnClickListener {
-            settingsUseSpeechToText.toggle()
-            config.useSpeechToText = settingsUseSpeechToText.isChecked
-            config.needRestart = true
         }
     }
 
@@ -1169,15 +1137,10 @@ class SettingsActivity : SimpleActivity() {
     private fun setupExportSettings() {
         binding.settingsExportHolder.setOnClickListener {
             val configItems = LinkedHashMap<String, Any>().apply {
-                put(TOP_APP_BAR_COLOR_ICON, config.topAppBarColorIcon)
-                put(TOP_APP_BAR_COLOR_TITLE, config.topAppBarColorTitle)
-                put(TEXT_CURSOR_COLOR, config.textCursorColor)
                 put(TEXT_COLOR, config.textColor)
                 put(BACKGROUND_COLOR, config.backgroundColor)
                 put(PRIMARY_COLOR, config.primaryColor)
                 put(SAVE_PRIMARY_COLOR, config.savePrimaryColor)
-                put(ACCENT_COLOR, config.accentColor)
-                put(IS_USING_ACCENT_COLOR, config.isUsingAccentColor)
                 put(OVERFLOW_ICON, config.overflowIcon)
                 put(APP_ICON_COLOR, config.appIconColor)
 
@@ -1324,15 +1287,10 @@ class SettingsActivity : SimpleActivity() {
 
         for ((key, value) in configValues) {
             when (key) {
-                TOP_APP_BAR_COLOR_ICON -> config.topAppBarColorIcon = value.toBoolean()
-                TOP_APP_BAR_COLOR_TITLE -> config.topAppBarColorTitle = value.toBoolean()
-                TEXT_CURSOR_COLOR -> config.textCursorColor = value.toInt()
                 TEXT_COLOR -> config.textColor = value.toInt()
                 BACKGROUND_COLOR -> config.backgroundColor = value.toInt()
                 PRIMARY_COLOR -> config.primaryColor = value.toInt()
                 SAVE_PRIMARY_COLOR -> config.savePrimaryColor = value.toInt()
-                ACCENT_COLOR -> config.accentColor = value.toInt()
-                IS_USING_ACCENT_COLOR -> config.isUsingAccentColor = value.toBoolean()
                 OVERFLOW_ICON -> config.overflowIcon = value.toInt()
                 APP_ICON_COLOR -> {
                     if (getAppIconColors().contains(value.toInt())) {
@@ -1454,7 +1412,7 @@ class SettingsActivity : SimpleActivity() {
 
     private fun setupTipJar() = binding.apply {
         settingsTipJarHolder.apply {
-            beVisibleIf(checkPro(false))
+            beVisible()
             background.applyColorFilter(getColoredMaterialStatusBarColor().lightenColor(4))
             setOnClickListener {
                 launchPurchase()
@@ -1491,14 +1449,4 @@ class SettingsActivity : SimpleActivity() {
         )
     }
 
-    private fun updatePro(isPro: Boolean = checkPro()) {
-        binding.apply {
-            settingsPurchaseThankYouHolder.beGoneIf(isPro)
-            settingsTipJarHolder.beVisibleIf(isPro)
-        }
-    }
-
-    private fun checkPro(collection: Boolean = resources.getBoolean(R.bool.show_collection)) =
-        if (collection) isPro() || isCollection()
-        else isPro()
 }

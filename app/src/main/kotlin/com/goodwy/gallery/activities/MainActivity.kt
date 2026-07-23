@@ -9,7 +9,6 @@ import android.os.Handler
 import android.provider.MediaStore
 import android.provider.MediaStore.Images
 import android.provider.MediaStore.Video
-import android.speech.RecognizerIntent
 import android.view.MenuItem
 import android.view.ViewGroup
 import android.widget.RelativeLayout
@@ -46,7 +45,6 @@ import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.InputStream
 import java.io.OutputStream
-import java.util.Objects
 
 class MainActivity : SimpleActivity(), DirectoryOperationsListener {
     override var isSearchBarEnabled = true
@@ -95,7 +93,6 @@ class MainActivity : SimpleActivity(), DirectoryOperationsListener {
     private var mStoredPrimaryColor = 0
     private var mStoredStyleString = ""
     private var mStoredHideTopBarWhenScroll = false
-    private var isSpeechToTextAvailable = false
     private var wasKeyboardVisible = false
 
     private val binding by viewBinding(ActivityMainBinding::inflate)
@@ -378,16 +375,6 @@ class MainActivity : SimpleActivity(), DirectoryOperationsListener {
             } else if (requestCode == PICK_WALLPAPER) {
                 setResult(RESULT_OK)
                 finish()
-            } else if (requestCode == REQUEST_CODE_SPEECH_INPUT) {
-                if (resultData != null) {
-                    val res: ArrayList<String> =
-                        resultData.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS) as ArrayList<String>
-
-                    val speechToText =  Objects.requireNonNull(res)[0]
-                    if (speechToText.isNotEmpty()) {
-                        binding.mainMenu.setText(speechToText)
-                    }
-                }
             }
         }
         super.onActivityResult(requestCode, resultCode, resultData)
@@ -432,11 +419,6 @@ class MainActivity : SimpleActivity(), DirectoryOperationsListener {
             R.menu.menu_main
         }
 
-        if (baseConfig.useSpeechToText) {
-            isSpeechToTextAvailable = isSpeechToTextAvailable()
-            binding.mainMenu.showSpeechToText = isSpeechToTextAvailable
-        }
-
         binding.mainMenu.requireToolbar().inflateMenu(menuId)
 //        binding.mainMenu.toggleHideOnScroll(!config.scrollHorizontally && config.hideTopBarWhenScroll)
         // Top bar scroll
@@ -452,10 +434,6 @@ class MainActivity : SimpleActivity(), DirectoryOperationsListener {
             if (config.searchAllFilesByDefault) {
                 launchSearchActivity()
             }
-        }
-
-        binding.mainMenu.onSpeechToTextClickListener = {
-            speechToText()
         }
 
         binding.mainMenu.onSearchTextChangedListener = { text ->

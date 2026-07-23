@@ -2,13 +2,11 @@ package com.goodwy.gallery.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.speech.RecognizerIntent
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.goodwy.commons.extensions.*
-import com.goodwy.commons.helpers.REQUEST_CODE_SPEECH_INPUT
 import com.goodwy.commons.helpers.VIEW_TYPE_GRID
 import com.goodwy.commons.helpers.ensureBackgroundThread
 import com.goodwy.commons.models.FileDirItem
@@ -28,7 +26,6 @@ import com.goodwy.gallery.interfaces.MediaOperationsListener
 import com.goodwy.gallery.models.Medium
 import com.goodwy.gallery.models.ThumbnailItem
 import java.io.File
-import java.util.Objects
 
 class SearchActivity : SimpleActivity(), MediaOperationsListener {
     override var isSearchBarEnabled = true
@@ -37,7 +34,6 @@ class SearchActivity : SimpleActivity(), MediaOperationsListener {
 
     private var mCurrAsyncTask: GetMediaAsynctask? = null
     private var mAllMedia = ArrayList<ThumbnailItem>()
-    private var isSpeechToTextAvailable = false
     private var wasKeyboardVisible = false
 
     private val binding by viewBinding(ActivitySearchBinding::inflate)
@@ -70,38 +66,14 @@ class SearchActivity : SimpleActivity(), MediaOperationsListener {
         mCurrAsyncTask?.stopFetching()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
-        super.onActivityResult(requestCode, resultCode, resultData)
-        if (requestCode == REQUEST_CODE_SPEECH_INPUT && resultCode == RESULT_OK) {
-            if (resultData != null) {
-                val res: ArrayList<String> =
-                    resultData.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS) as ArrayList<String>
-
-                val speechToText =  Objects.requireNonNull(res)[0]
-                if (speechToText.isNotEmpty()) {
-                    binding.searchMenu.setText(speechToText)
-                }
-            }
-        }
-    }
-
     private fun setupOptionsMenu() {
         binding.searchMenu.requireToolbar().inflateMenu(R.menu.menu_search)
         binding.searchMenu.toggleHideOnScroll(config.hideTopBarWhenScroll)
-
-        if (baseConfig.useSpeechToText) {
-            isSpeechToTextAvailable = isSpeechToTextAvailable()
-            binding.searchMenu.showSpeechToText = isSpeechToTextAvailable
-        }
 
         binding.searchMenu.setupMenu()
         binding.searchMenu.toggleForceArrowBackIcon(true)
         binding.searchMenu.focusView()
         binding.searchMenu.updateHintText(getString(com.goodwy.commons.R.string.search_files))
-
-        binding.searchMenu.onSpeechToTextClickListener = {
-            speechToText()
-        }
 
         binding.searchMenu.onNavigateBackClickListener = {
             if (binding.searchMenu.getCurrentQuery().isEmpty()) {

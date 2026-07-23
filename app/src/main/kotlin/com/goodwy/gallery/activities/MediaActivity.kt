@@ -8,7 +8,6 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
-import android.speech.RecognizerIntent
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -46,7 +45,6 @@ import com.goodwy.gallery.models.ThumbnailSection
 import com.google.android.material.appbar.AppBarLayout
 import java.io.File
 import java.io.IOException
-import java.util.Objects
 import kotlin.math.abs
 
 class MediaActivity : SimpleActivity(), MediaOperationsListener {
@@ -82,7 +80,6 @@ class MediaActivity : SimpleActivity(), MediaOperationsListener {
     private var mStoredPrimaryColor = 0
     private var mStoredThumbnailSpacing = 0
     private var mStoredHideTopBarWhenScroll = false
-    private var isSpeechToTextAvailable = false
     private var wasKeyboardVisible = false
 
     private val binding by viewBinding(ActivityMediaBinding::inflate)
@@ -308,16 +305,6 @@ class MediaActivity : SimpleActivity(), MediaOperationsListener {
                 mMedia.clear()
                 refreshItems()
             }
-        } else if (requestCode == REQUEST_CODE_SPEECH_INPUT && resultCode == RESULT_OK) {
-            if (resultData != null) {
-                val res: ArrayList<String> =
-                    resultData.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS) as ArrayList<String>
-
-                val speechToText =  Objects.requireNonNull(res)[0]
-                if (speechToText.isNotEmpty()) {
-                    binding.mediaMenu.setText(speechToText)
-                }
-            }
         }
         super.onActivityResult(requestCode, resultCode, resultData)
     }
@@ -375,11 +362,6 @@ class MediaActivity : SimpleActivity(), MediaOperationsListener {
             }
         }
 
-        if (baseConfig.useSpeechToText) {
-            isSpeechToTextAvailable = isSpeechToTextAvailable()
-            binding.mediaMenu.showSpeechToText = isSpeechToTextAvailable
-        }
-
 //        binding.mediaMenu.toggleHideOnScroll(!config.scrollHorizontally && config.hideTopBarWhenScroll)
         // Top bar scroll
         val params = binding.mediaMenu.layoutParams as AppBarLayout.LayoutParams
@@ -389,10 +371,6 @@ class MediaActivity : SimpleActivity(), MediaOperationsListener {
         } else 0
         binding.mediaMenu.layoutParams = params
         binding.mediaMenu.setupMenu()
-
-        binding.mediaMenu.onSpeechToTextClickListener = {
-            speechToText()
-        }
 
         binding.mediaMenu.onSearchTextChangedListener = { text ->
             mLastSearchedText = text

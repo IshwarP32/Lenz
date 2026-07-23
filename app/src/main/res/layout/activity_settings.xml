@@ -34,12 +34,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <com.goodwy.commons.views.PurchaseThankYouItem
-                android:id="@+id/settingsPurchaseThankYouHolder"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/medium_margin"/>
-
             <TextView
                 android:id="@+id/settings_appearance_label"
                 style="@style/SettingsSectionLabelStyle"
@@ -187,18 +181,6 @@
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"
                             android:contentDescription="@string/manage_hidden_folders"/>
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:id="@+id/settingsUseSpeechToTextHolder"
-                        style="@style/SettingsHolderSwitchStyle">
-
-                        <com.goodwy.commons.views.MyMaterialSwitch
-                            android:id="@+id/settingsUseSpeechToText"
-                            style="@style/SettingsSwitchStyle"
-                            android:text="@string/voice_input"
-                            app:switchPadding="@dimen/bigger_margin" />
 
                     </RelativeLayout>
 

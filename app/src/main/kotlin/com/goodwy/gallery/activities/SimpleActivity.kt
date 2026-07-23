@@ -37,17 +37,8 @@ open class SimpleActivity : BaseSimpleActivity() {
 
     override fun getAppIconIDs() = arrayListOf(
         R.mipmap.ic_launcher,
-        R.mipmap.ic_launcher_one,
-        R.mipmap.ic_launcher_two,
-        R.mipmap.ic_launcher_three,
-        R.mipmap.ic_launcher_four,
-        R.mipmap.ic_launcher_five,
-        R.mipmap.ic_launcher_six,
-        R.mipmap.ic_launcher_seven,
-        R.mipmap.ic_launcher_eight,
-        R.mipmap.ic_launcher_nine,
-        R.mipmap.ic_launcher_ten,
-        R.mipmap.ic_launcher_eleven
+        R.mipmap.ic_launcher_logo_dark,
+        R.mipmap.ic_launcher_logo_light
     )
 
     override fun getAppLauncherName() = getString(R.string.app_launcher_name)
