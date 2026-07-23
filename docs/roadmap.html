@@ -1,0 +1,2343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Lenz — Complete development roadmap for building an Android gallery app with Google Drive sync, based on Goodwy Right Gallery.">
+    <title>Lenz — Development Roadmap & Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* ==============================
+           CSS CUSTOM PROPERTIES
+           ============================== */
+        :root {
+            /* Backgrounds */
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #111118;
+            --bg-card: #16161f;
+            --bg-card-hover: #1c1c28;
+            --bg-code: #1a1a26;
+            --bg-glass: rgba(22, 22, 31, 0.7);
+            --bg-glass-hover: rgba(28, 28, 40, 0.85);
+
+            /* Accent colors */
+            --accent-violet: #8b5cf6;
+            --accent-violet-dim: #7c3aed;
+            --accent-blue: #3b82f6;
+            --accent-cyan: #06b6d4;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --accent-pink: #ec4899;
+
+            /* Gradients */
+            --gradient-hero: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 50%, #06b6d4 100%);
+            --gradient-phase1: linear-gradient(135deg, #8b5cf6, #a78bfa);
+            --gradient-phase2: linear-gradient(135deg, #3b82f6, #60a5fa);
+            --gradient-phase3: linear-gradient(135deg, #06b6d4, #22d3ee);
+            --gradient-phase4: linear-gradient(135deg, #f59e0b, #fbbf24);
+            --gradient-phase5: linear-gradient(135deg, #10b981, #34d399);
+            --gradient-phase6: linear-gradient(135deg, #f43f5e, #fb7185);
+            --gradient-phase7: linear-gradient(135deg, #ec4899, #f472b6);
+
+            /* Text */
+            --text-primary: #e4e4ef;
+            --text-secondary: #9ca3b4;
+            --text-muted: #6b7280;
+            --text-heading: #f5f5ff;
+
+            /* Borders */
+            --border-default: rgba(255, 255, 255, 0.06);
+            --border-hover: rgba(255, 255, 255, 0.12);
+            --border-accent: rgba(139, 92, 246, 0.3);
+
+            /* Shadows */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --shadow-glow-violet: 0 0 30px rgba(139, 92, 246, 0.15);
+            --shadow-glow-blue: 0 0 30px rgba(59, 130, 246, 0.15);
+
+            /* Sizing */
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+
+            /* Transitions */
+            --transition-fast: 150ms ease;
+            --transition-base: 250ms ease;
+            --transition-slow: 400ms ease;
+        }
+
+        /* ==============================
+           RESET & BASE
+           ============================== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            font-size: 15px;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ==============================
+           AMBIENT BACKGROUND EFFECTS
+           ============================== */
+        .ambient-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.12;
+            pointer-events: none;
+            z-index: 0;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .ambient-orb--violet {
+            width: 600px;
+            height: 600px;
+            background: var(--accent-violet);
+            top: -200px;
+            right: -150px;
+            animation-delay: 0s;
+        }
+
+        .ambient-orb--blue {
+            width: 500px;
+            height: 500px;
+            background: var(--accent-blue);
+            bottom: 10%;
+            left: -200px;
+            animation-delay: -7s;
+        }
+
+        .ambient-orb--cyan {
+            width: 400px;
+            height: 400px;
+            background: var(--accent-cyan);
+            top: 50%;
+            right: -100px;
+            animation-delay: -14s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.05); }
+            66% { transform: translate(-20px, 20px) scale(0.95); }
+        }
+
+        /* ==============================
+           NAVIGATION
+           ============================== */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            background: rgba(10, 10, 15, 0.8);
+            border-bottom: 1px solid var(--border-default);
+            transition: var(--transition-base);
+        }
+
+        .nav__inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .nav__logo {
+            font-weight: 800;
+            font-size: 20px;
+            background: var(--gradient-hero);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .nav__links {
+            display: flex;
+            gap: 8px;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+
+        .nav__link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 6px 14px;
+            border-radius: 20px;
+            transition: var(--transition-fast);
+            white-space: nowrap;
+        }
+
+        .nav__link:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .nav__link--active {
+            color: var(--accent-violet);
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        /* ==============================
+           HERO SECTION
+           ============================== */
+        .hero {
+            position: relative;
+            min-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 32px 80px;
+            overflow: hidden;
+        }
+
+        .hero__badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px 6px 8px;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent-violet);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 24px;
+            animation: fadeInUp 0.6s ease both;
+        }
+
+        .hero__badge-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-violet);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        .hero__title {
+            font-size: clamp(40px, 6vw, 72px);
+            font-weight: 900;
+            line-height: 1.08;
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+            animation: fadeInUp 0.6s ease 0.1s both;
+        }
+
+        .hero__title-gradient {
+            background: var(--gradient-hero);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero__subtitle {
+            font-size: clamp(16px, 2vw, 20px);
+            color: var(--text-secondary);
+            max-width: 600px;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.6s ease 0.2s both;
+        }
+
+        .hero__stats {
+            display: flex;
+            gap: 48px;
+            animation: fadeInUp 0.6s ease 0.3s both;
+        }
+
+        .hero__stat {
+            text-align: center;
+        }
+
+        .hero__stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-heading);
+        }
+
+        .hero__stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        .hero__scroll-indicator {
+            position: absolute;
+            bottom: 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: fadeInUp 0.6s ease 0.5s both;
+        }
+
+        .hero__scroll-line {
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(to bottom, var(--accent-violet), transparent);
+            animation: scrollPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes scrollPulse {
+            0%, 100% { transform: scaleY(1); opacity: 1; }
+            50% { transform: scaleY(0.5); opacity: 0.3; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ==============================
+           SECTION LAYOUT
+           ============================== */
+        .section {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 32px;
+        }
+
+        .section__header {
+            margin-bottom: 48px;
+        }
+
+        .section__eyebrow {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+
+        .section__title {
+            font-size: clamp(28px, 4vw, 40px);
+            font-weight: 800;
+            letter-spacing: -1px;
+            color: var(--text-heading);
+            margin-bottom: 12px;
+        }
+
+        .section__description {
+            font-size: 16px;
+            color: var(--text-secondary);
+            max-width: 640px;
+        }
+
+        /* ==============================
+           OVERVIEW GRID
+           ============================== */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 32px;
+        }
+
+        .overview-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            transition: var(--transition-base);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .overview-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--card-accent, var(--gradient-hero));
+            opacity: 0;
+            transition: var(--transition-base);
+        }
+
+        .overview-card:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-hover);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .overview-card:hover::before {
+            opacity: 1;
+        }
+
+        .overview-card__icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 16px;
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        .overview-card__title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-heading);
+            margin-bottom: 8px;
+        }
+
+        .overview-card__desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* ==============================
+           TECH STACK GRID
+           ============================== */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-top: 32px;
+        }
+
+        .tech-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 18px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
+            transition: var(--transition-base);
+        }
+
+        .tech-item:hover {
+            border-color: var(--border-hover);
+            background: var(--bg-card-hover);
+            transform: translateX(4px);
+        }
+
+        .tech-item__icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .tech-item__info {
+            min-width: 0;
+        }
+
+        .tech-item__name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-heading);
+        }
+
+        .tech-item__role {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ==============================
+           PHASE CARDS (ROADMAP)
+           ============================== */
+        .roadmap-timeline {
+            position: relative;
+            margin-top: 32px;
+        }
+
+        .roadmap-timeline::before {
+            content: '';
+            position: absolute;
+            left: 28px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(
+                to bottom,
+                var(--accent-violet),
+                var(--accent-blue),
+                var(--accent-cyan),
+                var(--accent-amber),
+                var(--accent-emerald),
+                var(--accent-rose),
+                var(--accent-pink)
+            );
+            opacity: 0.3;
+        }
+
+        .phase {
+            position: relative;
+            margin-bottom: 40px;
+            padding-left: 72px;
+        }
+
+        .phase__marker {
+            position: absolute;
+            left: 14px;
+            top: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 800;
+            color: #fff;
+            z-index: 2;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .phase__card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: var(--transition-base);
+        }
+
+        .phase__card:hover {
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .phase__header {
+            padding: 28px 28px 0;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .phase__header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .phase__label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .phase__duration {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .phase__title {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-heading);
+            letter-spacing: -0.5px;
+            margin: 10px 0 6px;
+        }
+
+        .phase__summary {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .phase__toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent-violet);
+            padding: 8px 0 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .phase__toggle:hover {
+            opacity: 0.8;
+        }
+
+        .phase__toggle-icon {
+            transition: transform var(--transition-base);
+            font-size: 11px;
+        }
+
+        .phase__toggle-icon--open {
+            transform: rotate(90deg);
+        }
+
+        .phase__body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .phase__body--open {
+            max-height: 8000px;
+        }
+
+        .phase__content {
+            padding: 0 28px 28px;
+            border-top: 1px solid var(--border-default);
+            padding-top: 24px;
+        }
+
+        /* ==============================
+           INNER CONTENT STYLING
+           ============================== */
+        .step-group {
+            margin-bottom: 28px;
+        }
+
+        .step-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-group__title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-heading);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-group__title-icon {
+            font-size: 16px;
+        }
+
+        .step-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .step-list__item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            padding: 8px 14px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: var(--radius-sm);
+            border: 1px solid transparent;
+            transition: var(--transition-fast);
+        }
+
+        .step-list__item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: var(--border-default);
+        }
+
+        .step-list__check {
+            flex-shrink: 0;
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border-hover);
+            border-radius: 4px;
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: transparent;
+            transition: var(--transition-fast);
+            cursor: pointer;
+        }
+
+        .step-list__check--done {
+            background: var(--accent-emerald);
+            border-color: var(--accent-emerald);
+            color: #fff;
+        }
+
+        .code-block {
+            background: var(--bg-code);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin: 16px 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-default);
+        }
+
+        .code-block__lang {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--accent-violet);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .code-block__copy {
+            font-size: 11px;
+            color: var(--text-muted);
+            background: none;
+            border: 1px solid var(--border-default);
+            border-radius: 6px;
+            padding: 4px 10px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: var(--transition-fast);
+        }
+
+        .code-block__copy:hover {
+            color: var(--text-primary);
+            border-color: var(--border-hover);
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--text-primary);
+            white-space: pre;
+        }
+
+        .code-block code .kw { color: var(--accent-violet); }
+        .code-block code .fn { color: var(--accent-blue); }
+        .code-block code .str { color: var(--accent-emerald); }
+        .code-block code .cm { color: var(--text-muted); }
+        .code-block code .tp { color: var(--accent-cyan); }
+        .code-block code .num { color: var(--accent-amber); }
+        .code-block code .an { color: var(--accent-rose); }
+
+        .info-callout {
+            display: flex;
+            gap: 14px;
+            padding: 16px 20px;
+            border-radius: var(--radius-md);
+            margin: 16px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .info-callout--tip {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: var(--accent-emerald);
+        }
+
+        .info-callout--warn {
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            color: var(--accent-amber);
+        }
+
+        .info-callout--info {
+            background: rgba(59, 130, 246, 0.08);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            color: var(--accent-blue);
+        }
+
+        .info-callout__icon {
+            flex-shrink: 0;
+            font-size: 18px;
+        }
+
+        .link {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition-fast);
+        }
+
+        .link:hover {
+            color: #60a5fa;
+            text-decoration: underline;
+        }
+
+        /* ==============================
+           ARCHITECTURE DIAGRAM
+           ============================== */
+        .arch-diagram {
+            background: var(--bg-card);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            margin-top: 32px;
+            overflow-x: auto;
+        }
+
+        .arch-layers {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            min-width: 700px;
+        }
+
+        .arch-layer {
+            border-radius: var(--radius-md);
+            padding: 20px 24px;
+            border: 1px solid var(--border-default);
+        }
+
+        .arch-layer__title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+        }
+
+        .arch-layer__items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .arch-chip {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            white-space: nowrap;
+        }
+
+        .arch-arrow {
+            display: flex;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 18px;
+        }
+
+        /* ==============================
+           RESOURCES TABLE
+           ============================== */
+        .resources-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 24px;
+            overflow: hidden;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-default);
+        }
+
+        .resources-table th {
+            background: var(--bg-card);
+            color: var(--text-heading);
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 14px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-default);
+        }
+
+        .resources-table td {
+            padding: 14px 20px;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border-default);
+            color: var(--text-secondary);
+        }
+
+        .resources-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .resources-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .resource-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .resource-badge--essential {
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--accent-violet);
+        }
+
+        .resource-badge--recommended {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-emerald);
+        }
+
+        .resource-badge--optional {
+            background: rgba(107, 114, 128, 0.15);
+            color: var(--text-muted);
+        }
+
+        /* ==============================
+           FOOTER
+           ============================== */
+        .footer {
+            text-align: center;
+            padding: 48px 32px;
+            border-top: 1px solid var(--border-default);
+            margin-top: 40px;
+        }
+
+        .footer__text {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer__heart {
+            color: var(--accent-rose);
+        }
+
+        /* ==============================
+           PROGRESS BAR
+           ============================== */
+        .progress-bar {
+            position: fixed;
+            top: 64px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            z-index: 999;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .progress-bar__fill {
+            height: 100%;
+            background: var(--gradient-hero);
+            width: 0%;
+            transition: width 0.15s ease;
+        }
+
+        /* ==============================
+           RESPONSIVE
+           ============================== */
+        @media (max-width: 768px) {
+            .nav__links { display: none; }
+            .hero__stats { gap: 24px; }
+            .hero__stat-value { font-size: 22px; }
+            .section { padding: 48px 20px; }
+            .phase { padding-left: 48px; }
+            .roadmap-timeline::before { left: 16px; }
+            .phase__marker { left: 2px; }
+            .phase__content { padding: 0 20px 20px; }
+            .phase__header { padding: 20px 20px 0; }
+            .arch-diagram { padding: 20px; }
+        }
+
+        /* ==============================
+           SCROLLBAR
+           ============================== */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- Ambient Background Orbs -->
+    <div class="ambient-orb ambient-orb--violet"></div>
+    <div class="ambient-orb ambient-orb--blue"></div>
+    <div class="ambient-orb ambient-orb--cyan"></div>
+
+    <!-- Reading Progress Bar -->
+    <div class="progress-bar">
+        <div class="progress-bar__fill" id="progressFill"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <div class="nav__inner">
+            <div class="nav__logo">📸 Lenz</div>
+            <ul class="nav__links">
+                <li><a href="#overview" class="nav__link">Overview</a></li>
+                <li><a href="#tech-stack" class="nav__link">Tech Stack</a></li>
+                <li><a href="#architecture" class="nav__link">Architecture</a></li>
+                <li><a href="#roadmap" class="nav__link nav__link--active">Roadmap</a></li>
+                <li><a href="#resources" class="nav__link">Resources</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero__badge">
+            <span class="hero__badge-dot"></span>
+            Development Roadmap
+        </div>
+        <h1 class="hero__title">
+            Build <span class="hero__title-gradient">Lenz</span><br>
+            from Zero to Launch
+        </h1>
+        <p class="hero__subtitle">
+            A complete guide to building an Android gallery app with Google Drive sync — from setting up your first IDE to shipping a production-ready sync engine.
+        </p>
+        <div class="hero__stats">
+            <div class="hero__stat">
+                <div class="hero__stat-value">7</div>
+                <div class="hero__stat-label">Phases</div>
+            </div>
+            <div class="hero__stat">
+                <div class="hero__stat-value">~16</div>
+                <div class="hero__stat-label">Weeks Est.</div>
+            </div>
+            <div class="hero__stat">
+                <div class="hero__stat-value">Kotlin</div>
+                <div class="hero__stat-label">Language</div>
+            </div>
+        </div>
+        <div class="hero__scroll-indicator">
+            <span>Scroll</span>
+            <div class="hero__scroll-line"></div>
+        </div>
+    </section>
+
+    <!-- ========================================
+         OVERVIEW SECTION
+         ======================================== -->
+    <section class="section" id="overview">
+        <div class="section__header">
+            <div class="section__eyebrow" style="color: var(--accent-violet);">What We're Building</div>
+            <h2 class="section__title">Project Overview</h2>
+            <p class="section__description">
+                Lenz combines the best of <strong>Goodwy Right Gallery</strong> (an open-source Android gallery) with a custom <strong>Google Drive sync engine</strong> inspired by FolderSync.
+            </p>
+        </div>
+
+        <div class="overview-grid">
+            <div class="overview-card" style="--card-accent: var(--gradient-phase1);">
+                <div class="overview-card__icon" style="background: rgba(139, 92, 246, 0.12);">🖼️</div>
+                <h3 class="overview-card__title">Local Gallery</h3>
+                <p class="overview-card__desc">Browse, search and organize photos & videos stored on your Android device. Inherited from Right Gallery's polished media viewer.</p>
+            </div>
+            <div class="overview-card" style="--card-accent: var(--gradient-phase2);">
+                <div class="overview-card__icon" style="background: rgba(59, 130, 246, 0.12);">☁️</div>
+                <h3 class="overview-card__title">Google Drive Tab</h3>
+                <p class="overview-card__desc">A dedicated Cloud tab to browse, preview and download photos directly from your Google Drive without leaving the app.</p>
+            </div>
+            <div class="overview-card" style="--card-accent: var(--gradient-phase5);">
+                <div class="overview-card__icon" style="background: rgba(16, 185, 129, 0.12);">🔄</div>
+                <h3 class="overview-card__title">Sync Engine</h3>
+                <p class="overview-card__desc">FolderPair-based sync with one-way and two-way modes, delta sync (SHA-256 checksums), and scheduled background sync via WorkManager.</p>
+            </div>
+            <div class="overview-card" style="--card-accent: var(--gradient-phase4);">
+                <div class="overview-card__icon" style="background: rgba(245, 158, 11, 0.12);">🔐</div>
+                <h3 class="overview-card__title">Privacy First</h3>
+                <p class="overview-card__desc">No trackers, no telemetry. OAuth 2.0 with minimal scopes. Your photos stay yours — sync only what you choose.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================
+         TECH STACK SECTION
+         ======================================== -->
+    <section class="section" id="tech-stack">
+        <div class="section__header">
+            <div class="section__eyebrow" style="color: var(--accent-blue);">Technologies</div>
+            <h2 class="section__title">Tech Stack</h2>
+            <p class="section__description">
+                Modern Android development with Kotlin, Jetpack Compose, and industry-standard libraries.
+            </p>
+        </div>
+
+        <div class="tech-grid">
+            <div class="tech-item">
+                <div class="tech-item__icon" style="background: rgba(139, 92, 246, 0.12);">🟣</div>
+                <div class="tech-item__info">
+                    <div class="tech-item__name">Kotlin</div>
+                    <div class="tech-item__role">Primary language (100%)</div>
+                </div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-item__icon" style="background: rgba(59, 130, 246, 0.12);">🎨</div>
+                <div class="tech-item__info">
+                    <div class="tech-item__name">Jetpack Compose</div>
+                    <div class="tech-item__role">Declarative UI framework</div>
+                </div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-item__icon" style="background: rgba(6, 182, 212, 0.12);">🧩</div>
+                <div class="tech-item__info">
+                    <div class="tech-item__name">Hilt</div>
+                    <div class="tech-item__role">Dependency injection</div>
+                </div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-item__icon" style="background: rgba(16, 185, 129, 0.12);">💾</div>
+                <div class="tech-item__info">
+                    <div class="tech-item__name">Room Database</div>
+                    <div class="tech-item__role">Local persistence & sync state</div>
+                </div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-item__icon" style="background: rgba(245, 158, 11, 0.12);">⚡</div>
+                <div class="tech-item__info">
+                    <div class="tech-item__name">Kotlin Coroutines</div>
+                    <div class="tech-item__role">Asynchronous programming</div>
+                </div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-item__icon" style="background: rgba(244, 63, 94, 0.12);">🔑</div>
+                <div class="tech-item__info">
+                    <div class="tech-item__name">Credential Manager</div>
+                    <div class="tech-item__role">Google OAuth 2.0 auth</div>
+                </div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-item__icon" style="background: rgba(236, 72, 153, 0.12);">☁️</div>
+                <div class="tech-item__info">
+                    <div class="tech-item__name">Google Drive REST API</div>
+                    <div class="tech-item__role">Cloud file operations</div>
+                </div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-item__icon" style="background: rgba(139, 92, 246, 0.12);">⏰</div>
+                <div class="tech-item__info">
+                    <div class="tech-item__name">WorkManager</div>
+                    <div class="tech-item__role">Background sync scheduling</div>
+                </div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-item__icon" style="background: rgba(59, 130, 246, 0.12);">🖼️</div>
+                <div class="tech-item__info">
+                    <div class="tech-item__name">Coil / Glide</div>
+                    <div class="tech-item__role">Image loading & caching</div>
+                </div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-item__icon" style="background: rgba(6, 182, 212, 0.12);">🧭</div>
+                <div class="tech-item__info">
+                    <div class="tech-item__name">Navigation Component</div>
+                    <div class="tech-item__role">Single-activity navigation</div>
+                </div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-item__icon" style="background: rgba(16, 185, 129, 0.12);">🔨</div>
+                <div class="tech-item__info">
+                    <div class="tech-item__name">Gradle (Kotlin DSL)</div>
+                    <div class="tech-item__role">Build system</div>
+                </div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-item__icon" style="background: rgba(245, 158, 11, 0.12);">🗄️</div>
+                <div class="tech-item__info">
+                    <div class="tech-item__name">MediaStore API</div>
+                    <div class="tech-item__role">Local media access</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================
+         ARCHITECTURE SECTION
+         ======================================== -->
+    <section class="section" id="architecture">
+        <div class="section__header">
+            <div class="section__eyebrow" style="color: var(--accent-cyan);">System Design</div>
+            <h2 class="section__title">High-Level Architecture</h2>
+            <p class="section__description">
+                The app follows MVVM + Clean Architecture with clear separation between UI, business logic, and data layers.
+            </p>
+        </div>
+
+        <div class="arch-diagram">
+            <div class="arch-layers">
+                <!-- UI Layer -->
+                <div class="arch-layer" style="background: rgba(139, 92, 246, 0.05); border-color: rgba(139, 92, 246, 0.15);">
+                    <div class="arch-layer__title" style="color: var(--accent-violet);">🎨 UI Layer (Presentation)</div>
+                    <div class="arch-layer__items">
+                        <span class="arch-chip">Compose Screens</span>
+                        <span class="arch-chip">XML Layouts (legacy)</span>
+                        <span class="arch-chip">Local Gallery Tab</span>
+                        <span class="arch-chip">Cloud Gallery Tab</span>
+                        <span class="arch-chip">Sync Settings UI</span>
+                        <span class="arch-chip">Photo Viewer</span>
+                    </div>
+                </div>
+                <div class="arch-arrow">↕</div>
+
+                <!-- ViewModel Layer -->
+                <div class="arch-layer" style="background: rgba(59, 130, 246, 0.05); border-color: rgba(59, 130, 246, 0.15);">
+                    <div class="arch-layer__title" style="color: var(--accent-blue);">🧠 ViewModel Layer</div>
+                    <div class="arch-layer__items">
+                        <span class="arch-chip">GalleryViewModel</span>
+                        <span class="arch-chip">DriveViewModel</span>
+                        <span class="arch-chip">SyncViewModel</span>
+                        <span class="arch-chip">SettingsViewModel</span>
+                        <span class="arch-chip">StateFlow / LiveData</span>
+                    </div>
+                </div>
+                <div class="arch-arrow">↕</div>
+
+                <!-- Domain / Repository Layer -->
+                <div class="arch-layer" style="background: rgba(6, 182, 212, 0.05); border-color: rgba(6, 182, 212, 0.15);">
+                    <div class="arch-layer__title" style="color: var(--accent-cyan);">📦 Domain & Repository Layer</div>
+                    <div class="arch-layer__items">
+                        <span class="arch-chip">MediaRepository</span>
+                        <span class="arch-chip">DriveRepository</span>
+                        <span class="arch-chip">SyncRepository</span>
+                        <span class="arch-chip">SyncManager</span>
+                        <span class="arch-chip">Use Cases</span>
+                        <span class="arch-chip">Conflict Resolver</span>
+                    </div>
+                </div>
+                <div class="arch-arrow">↕</div>
+
+                <!-- Data Sources -->
+                <div class="arch-layer" style="background: rgba(16, 185, 129, 0.05); border-color: rgba(16, 185, 129, 0.15);">
+                    <div class="arch-layer__title" style="color: var(--accent-emerald);">💾 Data Sources</div>
+                    <div class="arch-layer__items">
+                        <span class="arch-chip">MediaStore API</span>
+                        <span class="arch-chip">Room DB</span>
+                        <span class="arch-chip">Google Drive REST API</span>
+                        <span class="arch-chip">DataStore (prefs)</span>
+                        <span class="arch-chip">WorkManager</span>
+                        <span class="arch-chip">File System</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================
+         ROADMAP SECTION
+         ======================================== -->
+    <section class="section" id="roadmap">
+        <div class="section__header">
+            <div class="section__eyebrow" style="color: var(--accent-emerald);">The Plan</div>
+            <h2 class="section__title">Development Roadmap</h2>
+            <p class="section__description">
+                Seven phases from zero Android knowledge to a fully functional gallery with cloud sync. Click any phase to expand the detailed guide.
+            </p>
+        </div>
+
+        <div class="roadmap-timeline">
+
+            <!-- ============ PHASE 1 ============ -->
+            <div class="phase" id="phase-1">
+                <div class="phase__marker" style="background: var(--gradient-phase1);">1</div>
+                <div class="phase__card">
+                    <div class="phase__header" onclick="togglePhase(this)">
+                        <div class="phase__header-top">
+                            <span class="phase__label" style="background: rgba(139, 92, 246, 0.12); color: var(--accent-violet);">Phase 1</span>
+                            <span class="phase__duration">~1 day</span>
+                        </div>
+                        <h3 class="phase__title">Environment Setup</h3>
+                        <p class="phase__summary">Install Android Studio, SDK, JDK, Git, and configure your development environment for Android/Kotlin development.</p>
+                        <button class="phase__toggle">
+                            <span class="phase__toggle-icon">▶</span> View detailed steps
+                        </button>
+                    </div>
+                    <div class="phase__body">
+                        <div class="phase__content">
+                            <!-- System Requirements -->
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">💻</span> System Requirements</h4>
+                                <ul class="step-list">
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>OS:</strong> Windows 10/11, macOS, or Linux</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>RAM:</strong> 16 GB recommended (8 GB minimum — will be slow)</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>Storage:</strong> 40 GB+ free SSD space</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>CPU:</strong> Multi-core processor with hardware virtualization enabled (BIOS/UEFI: Intel VT-x or AMD-V)</li>
+                                </ul>
+                            </div>
+
+                            <!-- Installation Steps -->
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">📥</span> Installation Steps</h4>
+                                <ul class="step-list">
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div><strong>Install JDK 17+</strong> — Download from <a href="https://adoptium.net/" class="link" target="_blank">Adoptium</a> (recommended) or Oracle. Android Studio bundles a JDK, but having a standalone one is useful for command-line Gradle.</div>
+                                    </li>
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div><strong>Install Android Studio</strong> — Download from <a href="https://developer.android.com/studio" class="link" target="_blank">developer.android.com/studio</a>. During setup, ensure these components are selected:
+                                            <br>• Android SDK
+                                            <br>• Android SDK Platform-Tools
+                                            <br>• Android Virtual Device (Emulator)
+                                        </div>
+                                    </li>
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div><strong>Install Git</strong> — Download from <a href="https://git-scm.com/downloads" class="link" target="_blank">git-scm.com</a>. Configure your identity:
+                                        </div>
+                                    </li>
+                                </ul>
+
+                                <div class="code-block">
+                                    <div class="code-block__header">
+                                        <span class="code-block__lang">Terminal</span>
+                                        <button class="code-block__copy" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <code>git config --global user.name <span class="str">"Your Name"</span>
+git config --global user.email <span class="str">"your.email@example.com"</span></code>
+                                </div>
+                            </div>
+
+                            <!-- SDK Configuration -->
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">⚙️</span> SDK Configuration</h4>
+                                <ul class="step-list">
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div>Open Android Studio → <strong>Settings → Languages & Frameworks → Android SDK</strong></div>
+                                    </li>
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div>Install the latest API level (currently API 35 — Android 15) plus API 34 (for broad compatibility)</div>
+                                    </li>
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div>Under <strong>SDK Tools</strong> tab, install: Android SDK Build-Tools, Android Emulator, Android SDK Platform-Tools, Google Play services</div>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- Emulator / Device -->
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">📱</span> Set Up Test Device</h4>
+                                <ul class="step-list">
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div><strong>Emulator:</strong> In Android Studio → Device Manager → Create Virtual Device → choose Pixel 8 or Pixel 9 → select a system image → Finish</div>
+                                    </li>
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div><strong>Physical Device (recommended for gallery app):</strong>
+                                            <br>1. Go to phone Settings → About Phone → tap "Build Number" 7 times
+                                            <br>2. Go to Settings → Developer Options → enable "USB Debugging"
+                                            <br>3. Connect via USB, accept the RSA key prompt on the phone
+                                        </div>
+                                    </li>
+                                </ul>
+
+                                <div class="info-callout info-callout--tip">
+                                    <span class="info-callout__icon">💡</span>
+                                    <div><strong>Tip:</strong> A physical device is strongly recommended for testing gallery apps — you need real photos, camera access, and accurate performance measurements that emulators can't fully replicate.</div>
+                                </div>
+                            </div>
+
+                            <!-- Google Cloud Setup -->
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">☁️</span> Google Cloud Project (Do This Now)</h4>
+                                <ul class="step-list">
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div>Go to <a href="https://console.cloud.google.com/" class="link" target="_blank">Google Cloud Console</a> → Create a new project named "Lenz"</div>
+                                    </li>
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div>Navigate to <strong>APIs & Services → Library</strong> → Search for and enable <strong>"Google Drive API"</strong></div>
+                                    </li>
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div>Go to <strong>APIs & Services → OAuth Consent Screen</strong> → Configure as "External" → Add app name, email, and branding</div>
+                                    </li>
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div>Go to <strong>Credentials</strong> → Create two OAuth 2.0 Client IDs:
+                                            <br>1. <strong>Android type</strong> — enter your package name (<code>com.lenz.app</code>) and debug SHA-1 fingerprint
+                                            <br>2. <strong>Web application type</strong> — needed for token exchange
+                                        </div>
+                                    </li>
+                                </ul>
+
+                                <div class="info-callout info-callout--info">
+                                    <span class="info-callout__icon">ℹ️</span>
+                                    <div><strong>Get your SHA-1 fingerprint:</strong> Run this command in the terminal. The password is usually <code>android</code>.</div>
+                                </div>
+
+                                <div class="code-block">
+                                    <div class="code-block__header">
+                                        <span class="code-block__lang">Terminal (Windows)</span>
+                                        <button class="code-block__copy" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <code><span class="cm"># Windows — find your debug keystore SHA-1</span>
+keytool -list -v -keystore "%USERPROFILE%\.android\debug.keystore" -alias androiddebugkey -storepass android
+
+<span class="cm"># macOS / Linux</span>
+keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ PHASE 2 ============ -->
+            <div class="phase" id="phase-2">
+                <div class="phase__marker" style="background: var(--gradient-phase2);">2</div>
+                <div class="phase__card">
+                    <div class="phase__header" onclick="togglePhase(this)">
+                        <div class="phase__header-top">
+                            <span class="phase__label" style="background: rgba(59, 130, 246, 0.12); color: var(--accent-blue);">Phase 2</span>
+                            <span class="phase__duration">~3-4 weeks</span>
+                        </div>
+                        <h3 class="phase__title">Learn Android Fundamentals</h3>
+                        <p class="phase__summary">Build foundational Kotlin and Android skills through Google's official course and hands-on mini-projects before touching the gallery codebase.</p>
+                        <button class="phase__toggle">
+                            <span class="phase__toggle-icon">▶</span> View detailed steps
+                        </button>
+                    </div>
+                    <div class="phase__body">
+                        <div class="phase__content">
+                            <!-- Kotlin Fundamentals -->
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">📘</span> Week 1-2: Kotlin & Compose Basics</h4>
+                                <ul class="step-list">
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div><strong>Start the official course:</strong> <a href="https://developer.android.com/courses/android-basics-compose/course" class="link" target="_blank">Android Basics with Compose</a> — This is free, comprehensive, and the gold standard for beginners in 2026.</div>
+                                    </li>
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div><strong>Kotlin core concepts to master:</strong> Variables, types, null safety (<code>?</code>, <code>!!</code>, <code>?.let{}</code>), functions, lambdas, data classes, sealed classes, extension functions, collections (<code>map</code>, <code>filter</code>, <code>forEach</code>)</div>
+                                    </li>
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div><strong>Jetpack Compose basics:</strong> <code>@Composable</code> functions, state management (<code>remember</code>, <code>mutableStateOf</code>), layouts (<code>Column</code>, <code>Row</code>, <code>Box</code>, <code>LazyColumn</code>, <code>LazyVerticalGrid</code>), Material Design 3 components</div>
+                                    </li>
+                                </ul>
+
+                                <div class="info-callout info-callout--warn">
+                                    <span class="info-callout__icon">⚠️</span>
+                                    <div><strong>Do not skip this phase!</strong> Jumping directly into Right Gallery's codebase without understanding Kotlin, Compose, and the Activity lifecycle will result in weeks of frustration. This investment pays for itself many times over.</div>
+                                </div>
+                            </div>
+
+                            <!-- Mini Projects -->
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">🔨</span> Week 2-3: Build Mini-Projects</h4>
+                                <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 14px;">Build these small apps to cement your understanding. Each one teaches concepts you'll need for Lenz.</p>
+                                <ul class="step-list">
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div><strong>Project 1 — "Hello Gallery"</strong>: Display a grid of placeholder images using <code>LazyVerticalGrid</code>. Learn Compose layout, state, and navigation.
+                                            <br><em>Concepts: Compose basics, grid layout, navigation</em>
+                                        </div>
+                                    </li>
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div><strong>Project 2 — "Photo Loader"</strong>: Load actual device photos using MediaStore API and display them in a grid with Coil/Glide.
+                                            <br><em>Concepts: Android permissions, MediaStore, image loading libraries</em>
+                                        </div>
+                                    </li>
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div><strong>Project 3 — "Note Saver"</strong>: A simple notes app with Room database. Add, edit, delete notes.
+                                            <br><em>Concepts: Room, ViewModel, MVVM pattern, Coroutines</em>
+                                        </div>
+                                    </li>
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div><strong>Project 4 — "API Explorer"</strong>: Fetch data from a public REST API (e.g., Unsplash) and display it. Add pull-to-refresh.
+                                            <br><em>Concepts: Retrofit/Ktor, Coroutines, error handling, loading states</em>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- Key Android Concepts -->
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">🧠</span> Week 3-4: Key Concepts Deep Dive</h4>
+                                <ul class="step-list">
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>Activity Lifecycle:</strong> <code>onCreate</code> → <code>onStart</code> → <code>onResume</code> → <code>onPause</code> → <code>onStop</code> → <code>onDestroy</code></li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>ViewModel:</strong> Survive configuration changes, expose UI state via <code>StateFlow</code></li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>Kotlin Coroutines:</strong> <code>launch</code>, <code>async</code>, <code>withContext(Dispatchers.IO)</code>, <code>Flow</code></li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>Dependency Injection with Hilt:</strong> <code>@HiltAndroidApp</code>, <code>@AndroidEntryPoint</code>, <code>@Inject</code>, <code>@Module</code>, <code>@Provides</code></li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>Permissions:</strong> Runtime permission requests, <code>READ_MEDIA_IMAGES</code>, <code>READ_MEDIA_VIDEO</code> (Android 13+)</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>Navigation:</strong> Jetpack Navigation, NavHost, passing arguments between screens</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>Scoped Storage (Android 11+):</strong> How MediaStore replaces direct file access</li>
+                                </ul>
+                            </div>
+
+                            <!-- Kotlin Code Sample -->
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">📝</span> Example: A Simple ViewModel</h4>
+                                <div class="code-block">
+                                    <div class="code-block__header">
+                                        <span class="code-block__lang">Kotlin</span>
+                                        <button class="code-block__copy" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <code><span class="an">@HiltViewModel</span>
+<span class="kw">class</span> <span class="tp">GalleryViewModel</span> <span class="an">@Inject</span> <span class="kw">constructor</span>(
+    <span class="kw">private val</span> mediaRepository: <span class="tp">MediaRepository</span>
+) : <span class="tp">ViewModel</span>() {
+
+    <span class="kw">private val</span> _photos = <span class="fn">MutableStateFlow</span>&lt;<span class="tp">List</span>&lt;<span class="tp">Photo</span>&gt;&gt;(<span class="fn">emptyList</span>())
+    <span class="kw">val</span> photos: <span class="tp">StateFlow</span>&lt;<span class="tp">List</span>&lt;<span class="tp">Photo</span>&gt;&gt; = _photos.<span class="fn">asStateFlow</span>()
+
+    <span class="kw">init</span> {
+        <span class="fn">loadPhotos</span>()
+    }
+
+    <span class="kw">private fun</span> <span class="fn">loadPhotos</span>() {
+        viewModelScope.<span class="fn">launch</span> {
+            mediaRepository.<span class="fn">getLocalPhotos</span>()
+                .<span class="fn">collect</span> { photoList ->
+                    _photos.value = photoList
+                }
+        }
+    }
+}</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ PHASE 3 ============ -->
+            <div class="phase" id="phase-3">
+                <div class="phase__marker" style="background: var(--gradient-phase3);">3</div>
+                <div class="phase__card">
+                    <div class="phase__header" onclick="togglePhase(this)">
+                        <div class="phase__header-top">
+                            <span class="phase__label" style="background: rgba(6, 182, 212, 0.12); color: var(--accent-cyan);">Phase 3</span>
+                            <span class="phase__duration">~1-2 weeks</span>
+                        </div>
+                        <h3 class="phase__title">Clone & Understand Right Gallery</h3>
+                        <p class="phase__summary">Fork the Goodwy Right Gallery repo, build it successfully, and systematically study its architecture, modules, and data flow.</p>
+                        <button class="phase__toggle">
+                            <span class="phase__toggle-icon">▶</span> View detailed steps
+                        </button>
+                    </div>
+                    <div class="phase__body">
+                        <div class="phase__content">
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">🍴</span> Fork & Clone</h4>
+                                <ul class="step-list">
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div>Go to <a href="https://github.com/Goodwy/Gallery" class="link" target="_blank">github.com/Goodwy/Gallery</a> → Click <strong>Fork</strong> → Fork to your own GitHub account</div>
+                                    </li>
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div>Clone to your project directory:</div>
+                                    </li>
+                                </ul>
+                                <div class="code-block">
+                                    <div class="code-block__header">
+                                        <span class="code-block__lang">Terminal</span>
+                                        <button class="code-block__copy" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <code><span class="cm"># Clone your fork into I:\Projects\Lenz</span>
+<span class="kw">cd</span> I:\Projects
+git clone https://github.com/YOUR_USERNAME/Gallery.git Lenz
+<span class="kw">cd</span> Lenz
+
+<span class="cm"># Add upstream remote to stay synced with original</span>
+git remote add upstream https://github.com/Goodwy/Gallery.git
+git fetch upstream</code>
+                                </div>
+                            </div>
+
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">🔨</span> Build & Run</h4>
+                                <ul class="step-list">
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Open the project in Android Studio (<strong>File → Open → select I:\Projects\Lenz</strong>)</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Wait for Gradle sync to complete (may take several minutes on first build)</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Fix any SDK/dependency version issues that arise</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Select your device/emulator and click <strong>Run ▶</strong></li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Verify the gallery loads and shows local photos</li>
+                                </ul>
+                            </div>
+
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">🔍</span> Study the Codebase</h4>
+                                <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 14px;">Spend focused time reading code — this is more important than writing code at this stage.</p>
+                                <ul class="step-list">
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>Module structure:</strong> Identify all Gradle modules (app, commons, etc.) and their responsibilities</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>Entry points:</strong> Find the main Activity, understand how the app launches</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>Media loading:</strong> Trace how photos go from MediaStore → data layer → UI (what image loader? what caching?)</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>Navigation:</strong> Map out all activities/fragments and how users navigate between them</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>Goodwy-Commons:</strong> Understand this shared library — it contains base classes, utilities, and UI components used across all Goodwy apps</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>Dependencies:</strong> Read <code>build.gradle.kts</code> files to understand all third-party libraries</li>
+                                </ul>
+
+                                <div class="info-callout info-callout--tip">
+                                    <span class="info-callout__icon">💡</span>
+                                    <div><strong>Pro Tip:</strong> Create a <strong>codebase map</strong> document listing every key class, its purpose, and its relationships. This will be invaluable when you start modifying the code in Phase 4.</div>
+                                </div>
+                            </div>
+
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">📝</span> Document Key Extension Points</h4>
+                                <ul class="step-list">
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Where to add a new tab (bottom navigation or top tab bar)</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Where media data sources are registered (for adding Drive as a new source)</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> How thumbnails and full-resolution images are loaded</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> How the app handles different media types (photo vs video)</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> What the settings/preferences system looks like</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ PHASE 4 ============ -->
+            <div class="phase" id="phase-4">
+                <div class="phase__marker" style="background: var(--gradient-phase4);">4</div>
+                <div class="phase__card">
+                    <div class="phase__header" onclick="togglePhase(this)">
+                        <div class="phase__header-top">
+                            <span class="phase__label" style="background: rgba(245, 158, 11, 0.12); color: var(--accent-amber);">Phase 4</span>
+                            <span class="phase__duration">~1-2 weeks</span>
+                        </div>
+                        <h3 class="phase__title">Strip & Rebrand</h3>
+                        <p class="phase__summary">Remove unwanted features (premium gates, donation prompts, file manager, etc.), rebrand the app to "Lenz", and ensure the core gallery remains rock-solid.</p>
+                        <button class="phase__toggle">
+                            <span class="phase__toggle-icon">▶</span> View detailed steps
+                        </button>
+                    </div>
+                    <div class="phase__body">
+                        <div class="phase__content">
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">🗑️</span> Remove Unwanted Features</h4>
+                                <ul class="step-list">
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Remove premium/pro feature gates and purchase flows</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Remove donation prompts and in-app purchase code</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Remove any file manager capabilities (if present) — keep only gallery features</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Remove music/audio player features (if present)</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Remove any analytics or tracking code</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Remove features you won't need (e.g., built-in photo editor, if too complex to maintain)</li>
+                                </ul>
+
+                                <div class="info-callout info-callout--warn">
+                                    <span class="info-callout__icon">⚠️</span>
+                                    <div><strong>Be surgical!</strong> Remove features one at a time, building and testing after each removal. Don't try to rip out everything at once — Right Gallery's code is interconnected through Goodwy-Commons.</div>
+                                </div>
+                            </div>
+
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">🎨</span> Rebrand to Lenz</h4>
+                                <ul class="step-list">
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>Package name:</strong> Refactor from <code>com.goodwy.gallery</code> to <code>com.lenz.app</code> (Android Studio → right-click package → Refactor → Rename)</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>App name:</strong> Update <code>strings.xml</code> — change <code>app_name</code> to "Lenz"</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>Launcher icon:</strong> Replace with your own icon (Android Studio → right-click res → New → Image Asset)</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>Color scheme:</strong> Update <code>colors.xml</code> / theme to your brand colors</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>applicationId:</strong> Update in <code>build.gradle.kts</code> to <code>"com.lenz.app"</code></li>
+                                </ul>
+                            </div>
+
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">✅</span> Validation Checklist</h4>
+                                <ul class="step-list">
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> App compiles without errors</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Local photo grid displays correctly</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Photo viewer (full-screen) works with zoom, swipe</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Folder/album browsing works</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Video playback works</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> No crashes on rotation or backgrounding</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> All removed feature entry points are gone (no dead menu items)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ PHASE 5 ============ -->
+            <div class="phase" id="phase-5">
+                <div class="phase__marker" style="background: var(--gradient-phase5);">5</div>
+                <div class="phase__card">
+                    <div class="phase__header" onclick="togglePhase(this)">
+                        <div class="phase__header-top">
+                            <span class="phase__label" style="background: rgba(16, 185, 129, 0.12); color: var(--accent-emerald);">Phase 5</span>
+                            <span class="phase__duration">~2-3 weeks</span>
+                        </div>
+                        <h3 class="phase__title">Google Drive Tab</h3>
+                        <p class="phase__summary">Implement Google OAuth 2.0 sign-in, add a "Cloud" tab to the navigation, and build a DriveRepository to browse and preview Drive photos.</p>
+                        <button class="phase__toggle">
+                            <span class="phase__toggle-icon">▶</span> View detailed steps
+                        </button>
+                    </div>
+                    <div class="phase__body">
+                        <div class="phase__content">
+                            <!-- OAuth Implementation -->
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">🔐</span> Step 1: Google OAuth 2.0 Authentication</h4>
+                                <ul class="step-list">
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div>Add dependencies to <code>build.gradle.kts</code>:
+                                            <br>• <code>com.google.android.gms:play-services-auth</code>
+                                            <br>• <code>com.google.api-client:google-api-client-android</code>
+                                            <br>• <code>com.google.apis:google-api-services-drive</code>
+                                            <br>• <code>androidx.credentials:credentials</code> (Credential Manager)
+                                        </div>
+                                    </li>
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div>Implement sign-in using <strong>Credential Manager API</strong> (replaces deprecated GoogleSignInClient)</div>
+                                    </li>
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div>Use <strong>AuthorizationClient</strong> to request <code>DriveScopes.DRIVE_FILE</code> separately from sign-in (Google's recommended pattern)</div>
+                                    </li>
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div>Store and refresh tokens securely using EncryptedSharedPreferences or DataStore</div>
+                                    </li>
+                                </ul>
+
+                                <div class="code-block">
+                                    <div class="code-block__header">
+                                        <span class="code-block__lang">Kotlin — OAuth Setup</span>
+                                        <button class="code-block__copy" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <code><span class="cm">// Step 1: Sign in with Credential Manager</span>
+<span class="kw">val</span> credentialManager = <span class="tp">CredentialManager</span>.<span class="fn">create</span>(context)
+<span class="kw">val</span> googleIdOption = <span class="tp">GetGoogleIdOption</span>.<span class="tp">Builder</span>()
+    .<span class="fn">setServerClientId</span>(<span class="str">"YOUR_WEB_CLIENT_ID"</span>)
+    .<span class="fn">setFilterByAuthorizedAccounts</span>(<span class="kw">false</span>)
+    .<span class="fn">build</span>()
+
+<span class="cm">// Step 2: Request Drive authorization (separate step)</span>
+<span class="kw">val</span> authRequest = <span class="tp">AuthorizationRequest</span>.<span class="tp">Builder</span>()
+    .<span class="fn">setRequestedScopes</span>(<span class="fn">listOf</span>(<span class="tp">Scope</span>(<span class="tp">DriveScopes</span>.DRIVE_FILE)))
+    .<span class="fn">build</span>()
+
+<span class="kw">val</span> authResult = <span class="tp">Identity</span>.<span class="fn">getAuthorizationClient</span>(context)
+    .<span class="fn">authorize</span>(authRequest)
+    .<span class="fn">await</span>()</code>
+                                </div>
+                            </div>
+
+                            <!-- Drive Repository -->
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">📦</span> Step 2: Build DriveRepository</h4>
+                                <ul class="step-list">
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div>Initialize the <code>Drive</code> service with the access token obtained from OAuth</div>
+                                    </li>
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div>Implement <code>listPhotos(folderId: String?)</code> — queries Drive for image/video MIME types</div>
+                                    </li>
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div>Implement <code>listFolders(parentId: String?)</code> — for folder navigation</div>
+                                    </li>
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div>Implement <code>downloadFile(fileId: String)</code> — download to cache directory for viewing</div>
+                                    </li>
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div>Implement <code>getThumbnail(fileId: String)</code> — use Drive's built-in thumbnail URLs for grid view</div>
+                                    </li>
+                                </ul>
+
+                                <div class="code-block">
+                                    <div class="code-block__header">
+                                        <span class="code-block__lang">Kotlin — Drive Service Init</span>
+                                        <button class="code-block__copy" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <code><span class="cm">// Initialize Google Drive service</span>
+<span class="kw">val</span> credential = <span class="tp">GoogleCredential</span>().<span class="fn">setAccessToken</span>(accessToken)
+<span class="kw">val</span> driveService = <span class="tp">Drive</span>.<span class="tp">Builder</span>(
+    <span class="tp">GoogleNetHttpTransport</span>.<span class="fn">newTrustedTransport</span>(),
+    <span class="tp">GsonFactory</span>.<span class="fn">getDefaultInstance</span>(),
+    credential
+).<span class="fn">setApplicationName</span>(<span class="str">"Lenz"</span>).<span class="fn">build</span>()
+
+<span class="cm">// List image files from Drive</span>
+<span class="kw">suspend fun</span> <span class="fn">listPhotos</span>(folderId: <span class="tp">String</span>?): <span class="tp">List</span>&lt;<span class="tp">DriveFile</span>&gt; =
+    <span class="fn">withContext</span>(<span class="tp">Dispatchers</span>.IO) {
+        <span class="kw">val</span> query = <span class="fn">buildString</span> {
+            <span class="fn">append</span>(<span class="str">"mimeType contains 'image/' and trashed = false"</span>)
+            folderId?.<span class="fn">let</span> { <span class="fn">append</span>(<span class="str">" and '$it' in parents"</span>) }
+        }
+        driveService.<span class="fn">files</span>().<span class="fn">list</span>()
+            .<span class="fn">setQ</span>(query)
+            .<span class="fn">setFields</span>(<span class="str">"files(id, name, mimeType, thumbnailLink, modifiedTime, size)"</span>)
+            .<span class="fn">setPageSize</span>(<span class="num">100</span>)
+            .<span class="fn">execute</span>()
+            .files.<span class="fn">map</span> { it.<span class="fn">toDriveFile</span>() }
+    }</code>
+                                </div>
+                            </div>
+
+                            <!-- Cloud Tab UI -->
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">🎨</span> Step 3: Add Cloud Tab to Navigation</h4>
+                                <ul class="step-list">
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Add a "Cloud" icon to the bottom navigation bar (or top tab bar — match existing pattern)</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Create <code>DriveGalleryScreen</code> Composable — reuse the same grid component as local gallery</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Show sign-in prompt if not authenticated, photo grid if authenticated</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Implement folder navigation breadcrumbs for Drive folders</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Tap photo → download to cache → open in the existing photo viewer</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Handle loading states, empty states, and error states gracefully</li>
+                                </ul>
+
+                                <div class="info-callout info-callout--tip">
+                                    <span class="info-callout__icon">💡</span>
+                                    <div><strong>Performance Tip:</strong> Use Drive's built-in <code>thumbnailLink</code> for grid thumbnails instead of downloading full images. Only download full resolution when the user taps to view.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ PHASE 6 ============ -->
+            <div class="phase" id="phase-6">
+                <div class="phase__marker" style="background: var(--gradient-phase6);">6</div>
+                <div class="phase__card">
+                    <div class="phase__header" onclick="togglePhase(this)">
+                        <div class="phase__header-top">
+                            <span class="phase__label" style="background: rgba(244, 63, 94, 0.12); color: var(--accent-rose);">Phase 6</span>
+                            <span class="phase__duration">~3-4 weeks</span>
+                        </div>
+                        <h3 class="phase__title">Sync Engine</h3>
+                        <p class="phase__summary">The most complex phase — build a FolderPair-based sync engine with delta sync, conflict resolution, scheduled background execution via WorkManager, and progress UI.</p>
+                        <button class="phase__toggle">
+                            <span class="phase__toggle-icon">▶</span> View detailed steps
+                        </button>
+                    </div>
+                    <div class="phase__body">
+                        <div class="phase__content">
+                            <!-- Data Model -->
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">🗄️</span> Step 1: Design the Data Model</h4>
+                                <ul class="step-list">
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div>Create Room entities for sync state management</div>
+                                    </li>
+                                </ul>
+
+                                <div class="code-block">
+                                    <div class="code-block__header">
+                                        <span class="code-block__lang">Kotlin — Room Entities</span>
+                                        <button class="code-block__copy" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <code><span class="an">@Entity</span>(tableName = <span class="str">"folder_pairs"</span>)
+<span class="kw">data class</span> <span class="tp">FolderPair</span>(
+    <span class="an">@PrimaryKey</span>(autoGenerate = <span class="kw">true</span>)
+    <span class="kw">val</span> id: <span class="tp">Long</span> = <span class="num">0</span>,
+    <span class="kw">val</span> localPath: <span class="tp">String</span>,           <span class="cm">// e.g., "/storage/emulated/0/DCIM/Camera"</span>
+    <span class="kw">val</span> remoteFolderId: <span class="tp">String</span>,      <span class="cm">// Google Drive folder ID</span>
+    <span class="kw">val</span> remoteFolderName: <span class="tp">String</span>,    <span class="cm">// Human-readable name</span>
+    <span class="kw">val</span> syncDirection: <span class="tp">SyncDirection</span>, <span class="cm">// UPLOAD, DOWNLOAD, TWO_WAY</span>
+    <span class="kw">val</span> conflictPolicy: <span class="tp">ConflictPolicy</span>,
+    <span class="kw">val</span> isEnabled: <span class="tp">Boolean</span> = <span class="kw">true</span>,
+    <span class="kw">val</span> scheduleMinutes: <span class="tp">Int</span> = <span class="num">60</span>,  <span class="cm">// Sync interval</span>
+    <span class="kw">val</span> lastSyncTime: <span class="tp">Long</span>? = <span class="kw">null</span>,
+    <span class="kw">val</span> lastSyncStatus: <span class="tp">SyncStatus</span> = <span class="tp">SyncStatus</span>.NEVER_SYNCED
+)
+
+<span class="kw">enum class</span> <span class="tp">SyncDirection</span>  { UPLOAD, DOWNLOAD, TWO_WAY }
+<span class="kw">enum class</span> <span class="tp">ConflictPolicy</span> { NEWEST_WINS, LOCAL_WINS, REMOTE_WINS, SKIP }
+<span class="kw">enum class</span> <span class="tp">SyncStatus</span>     { NEVER_SYNCED, SUCCESS, FAILED, IN_PROGRESS }
+
+<span class="an">@Entity</span>(tableName = <span class="str">"sync_records"</span>)
+<span class="kw">data class</span> <span class="tp">SyncRecord</span>(
+    <span class="an">@PrimaryKey</span>(autoGenerate = <span class="kw">true</span>)
+    <span class="kw">val</span> id: <span class="tp">Long</span> = <span class="num">0</span>,
+    <span class="kw">val</span> folderPairId: <span class="tp">Long</span>,
+    <span class="kw">val</span> fileName: <span class="tp">String</span>,
+    <span class="kw">val</span> localChecksum: <span class="tp">String</span>?,     <span class="cm">// SHA-256</span>
+    <span class="kw">val</span> remoteChecksum: <span class="tp">String</span>?,    <span class="cm">// SHA-256 from Drive</span>
+    <span class="kw">val</span> localModified: <span class="tp">Long</span>?,
+    <span class="kw">val</span> remoteModified: <span class="tp">Long</span>?,
+    <span class="kw">val</span> lastSyncedAt: <span class="tp">Long</span>
+)</code>
+                                </div>
+                            </div>
+
+                            <!-- Sync Logic -->
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">🔄</span> Step 2: Implement Sync Logic</h4>
+                                <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 14px;">The sync algorithm follows a three-phase approach inspired by FolderSync:</p>
+                                <ul class="step-list">
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div><strong>Phase A — Inventory:</strong> List all files in local folder and remote folder. Compute checksums for local files, retrieve checksums from Drive metadata.</div>
+                                    </li>
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div><strong>Phase B — Diff:</strong> Compare against the last-synced state (from <code>SyncRecord</code>). Categorize each file as: NEW_LOCAL, NEW_REMOTE, MODIFIED_LOCAL, MODIFIED_REMOTE, MODIFIED_BOTH (conflict), DELETED_LOCAL, DELETED_REMOTE, UNCHANGED.</div>
+                                    </li>
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div><strong>Phase C — Execute:</strong> For each diff result, perform the appropriate action (upload, download, delete, or resolve conflict) based on the sync direction and conflict policy.</div>
+                                    </li>
+                                </ul>
+
+                                <div class="info-callout info-callout--info">
+                                    <span class="info-callout__icon">ℹ️</span>
+                                    <div><strong>Delta Sync:</strong> Never re-upload/download unchanged files. Compare SHA-256 checksums + last-modified timestamps. Google Drive provides <code>md5Checksum</code> and <code>sha256Checksum</code> in file metadata — use these to avoid re-downloading files for comparison.</div>
+                                </div>
+                            </div>
+
+                            <!-- WorkManager Integration -->
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">⏰</span> Step 3: WorkManager Integration</h4>
+                                <ul class="step-list">
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div>Create <code>SyncWorker</code> extending <code>CoroutineWorker</code></div>
+                                    </li>
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div>Use <code>enqueueUniquePeriodicWork</code> with <code>ExistingPeriodicWorkPolicy.KEEP</code></div>
+                                    </li>
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div>Set constraints: <code>NetworkType.CONNECTED</code> (or <code>.UNMETERED</code> for large syncs), <code>setRequiresBatteryNotLow(true)</code></div>
+                                    </li>
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div>Return <code>Result.retry()</code> for transient errors (network timeout), <code>Result.failure()</code> for permanent errors (auth revoked)</div>
+                                    </li>
+                                    <li class="step-list__item">
+                                        <span class="step-list__check">✓</span>
+                                        <div>For syncs exceeding 10 minutes, call <code>setForeground()</code> and show a progress notification</div>
+                                    </li>
+                                </ul>
+
+                                <div class="code-block">
+                                    <div class="code-block__header">
+                                        <span class="code-block__lang">Kotlin — SyncWorker</span>
+                                        <button class="code-block__copy" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <code><span class="an">@HiltWorker</span>
+<span class="kw">class</span> <span class="tp">SyncWorker</span> <span class="an">@AssistedInject</span> <span class="kw">constructor</span>(
+    <span class="an">@Assisted</span> context: <span class="tp">Context</span>,
+    <span class="an">@Assisted</span> params: <span class="tp">WorkerParameters</span>,
+    <span class="kw">private val</span> syncManager: <span class="tp">SyncManager</span>
+) : <span class="tp">CoroutineWorker</span>(context, params) {
+
+    <span class="kw">override suspend fun</span> <span class="fn">doWork</span>(): <span class="tp">Result</span> {
+        <span class="kw">val</span> pairId = inputData.<span class="fn">getLong</span>(<span class="str">"PAIR_ID"</span>, -<span class="num">1</span>)
+        <span class="kw">if</span> (pairId == -<span class="num">1</span>L) <span class="kw">return</span> <span class="tp">Result</span>.<span class="fn">failure</span>()
+
+        <span class="kw">return try</span> {
+            <span class="cm">// Show notification for long-running sync</span>
+            <span class="fn">setForeground</span>(<span class="fn">createForegroundInfo</span>())
+            syncManager.<span class="fn">syncFolderPair</span>(pairId)
+            <span class="tp">Result</span>.<span class="fn">success</span>()
+        } <span class="kw">catch</span> (e: <span class="tp">IOException</span>) {
+            <span class="tp">Result</span>.<span class="fn">retry</span>()  <span class="cm">// Transient error</span>
+        } <span class="kw">catch</span> (e: <span class="tp">AuthException</span>) {
+            <span class="tp">Result</span>.<span class="fn">failure</span>() <span class="cm">// Permanent error</span>
+        }
+    }
+}
+
+<span class="cm">// Schedule periodic sync for a folder pair</span>
+<span class="kw">fun</span> <span class="fn">scheduleSyncForPair</span>(pair: <span class="tp">FolderPair</span>) {
+    <span class="kw">val</span> request = <span class="tp">PeriodicWorkRequestBuilder</span>&lt;<span class="tp">SyncWorker</span>&gt;(
+        pair.scheduleMinutes.<span class="fn">toLong</span>(), <span class="tp">TimeUnit</span>.MINUTES
+    ).<span class="fn">setConstraints</span>(
+        <span class="tp">Constraints</span>.<span class="tp">Builder</span>()
+            .<span class="fn">setRequiredNetworkType</span>(<span class="tp">NetworkType</span>.CONNECTED)
+            .<span class="fn">setRequiresBatteryNotLow</span>(<span class="kw">true</span>)
+            .<span class="fn">build</span>()
+    ).<span class="fn">setInputData</span>(
+        <span class="fn">workDataOf</span>(<span class="str">"PAIR_ID"</span> to pair.id)
+    ).<span class="fn">build</span>()
+
+    <span class="tp">WorkManager</span>.<span class="fn">getInstance</span>(context)
+        .<span class="fn">enqueueUniquePeriodicWork</span>(
+            <span class="str">"sync_pair_${pair.id}"</span>,
+            <span class="tp">ExistingPeriodicWorkPolicy</span>.KEEP,
+            request
+        )
+}</code>
+                                </div>
+                            </div>
+
+                            <!-- Sync UI -->
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">🎨</span> Step 4: Sync Settings UI</h4>
+                                <ul class="step-list">
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>FolderPair List Screen:</strong> Show all configured folder pairs with their status (synced, syncing, error)</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>Add/Edit FolderPair Screen:</strong> Local folder picker + Drive folder picker + sync direction + conflict policy + schedule interval</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>Sync Progress:</strong> Show a progress indicator with file count (e.g., "Uploading 23/150 files...")</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>Sync History:</strong> Log of past syncs with timestamps, file counts, and any errors</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>Manual Sync Button:</strong> Allow users to trigger an immediate sync for any folder pair</li>
+                                </ul>
+                            </div>
+
+                            <!-- Edge Cases -->
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">🐛</span> Step 5: Handle Edge Cases</h4>
+                                <ul class="step-list">
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Network disconnection mid-sync → save progress, resume on reconnect</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> OAuth token expiration → refresh token before sync starts</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Google Drive API quota exceeded → exponential backoff + retry</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Large files (videos) → chunked upload/download with progress tracking</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> File renamed on one side → detect via file ID (Drive) or checksum match</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Concurrent modifications (two-way conflict) → apply user's chosen conflict policy</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Low storage on device → warn user before downloading, skip if insufficient</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ PHASE 7 ============ -->
+            <div class="phase" id="phase-7">
+                <div class="phase__marker" style="background: var(--gradient-phase7);">7</div>
+                <div class="phase__card">
+                    <div class="phase__header" onclick="togglePhase(this)">
+                        <div class="phase__header-top">
+                            <span class="phase__label" style="background: rgba(236, 72, 153, 0.12); color: var(--accent-pink);">Phase 7</span>
+                            <span class="phase__duration">~2-3 weeks</span>
+                        </div>
+                        <h3 class="phase__title">Polish & Release</h3>
+                        <p class="phase__summary">Comprehensive testing, performance optimization, accessibility audit, and preparing for distribution (Play Store or F-Droid).</p>
+                        <button class="phase__toggle">
+                            <span class="phase__toggle-icon">▶</span> View detailed steps
+                        </button>
+                    </div>
+                    <div class="phase__body">
+                        <div class="phase__content">
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">🧪</span> Testing</h4>
+                                <ul class="step-list">
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>Unit tests:</strong> SyncManager diff logic, conflict resolver, checksum comparison, DriveRepository parsing</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>Integration tests:</strong> Room database operations, WorkManager scheduling</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>UI tests:</strong> Compose testing for navigation, states, and user flows</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>Manual testing:</strong> Test on multiple devices, API levels, and network conditions</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> <strong>Edge case testing:</strong> Airplane mode, low battery, large libraries (10,000+ photos), slow connections</li>
+                                </ul>
+                            </div>
+
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">⚡</span> Performance Optimization</h4>
+                                <ul class="step-list">
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Profile with Android Studio Profiler (CPU, Memory, Network)</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Optimize image loading — proper caching, downsampling for thumbnails</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Minimize API calls — batch Drive requests, cache metadata locally</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Reduce battery drain — proper WorkManager constraints, avoid wake locks</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Test cold start time — target under 2 seconds</li>
+                                </ul>
+                            </div>
+
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">♿</span> Accessibility</h4>
+                                <ul class="step-list">
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Content descriptions for all images and icons</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Sufficient color contrast ratios (WCAG AA)</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> TalkBack navigation testing</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Touch target sizes ≥ 48dp</li>
+                                </ul>
+                            </div>
+
+                            <div class="step-group">
+                                <h4 class="step-group__title"><span class="step-group__title-icon">🚀</span> Release Preparation</h4>
+                                <ul class="step-list">
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Generate release signing keystore (keep it safe — you can never change it!)</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Configure ProGuard/R8 for code shrinking and obfuscation</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Create Play Store listing: screenshots, description, privacy policy</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> OR prepare F-Droid metadata for open-source distribution</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Submit for Google OAuth verification (required for Drive API in production)</li>
+                                    <li class="step-list__item"><span class="step-list__check">✓</span> Build signed APK/AAB and test on a clean device</li>
+                                </ul>
+
+                                <div class="info-callout info-callout--warn">
+                                    <span class="info-callout__icon">⚠️</span>
+                                    <div><strong>OAuth Verification:</strong> For Google Drive API access to work for external users, your app must go through Google's OAuth verification process. This can take 2-6 weeks and requires a privacy policy, homepage, and demo video. Start this process early!</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ========================================
+         RESOURCES SECTION
+         ======================================== -->
+    <section class="section" id="resources">
+        <div class="section__header">
+            <div class="section__eyebrow" style="color: var(--accent-amber);">Reference</div>
+            <h2 class="section__title">Learning Resources</h2>
+            <p class="section__description">
+                Curated resources ordered by when you'll need them. Essential ones are must-reads; recommended are highly valuable but not blocking.
+            </p>
+        </div>
+
+        <table class="resources-table">
+            <thead>
+                <tr>
+                    <th>Resource</th>
+                    <th>Category</th>
+                    <th>Priority</th>
+                    <th>When</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href="https://developer.android.com/courses/android-basics-compose/course" class="link" target="_blank">Android Basics with Compose</a></td>
+                    <td>Course</td>
+                    <td><span class="resource-badge resource-badge--essential">Essential</span></td>
+                    <td>Phase 2</td>
+                </tr>
+                <tr>
+                    <td><a href="https://kotlinlang.org/docs/getting-started.html" class="link" target="_blank">Kotlin Official Documentation</a></td>
+                    <td>Docs</td>
+                    <td><span class="resource-badge resource-badge--essential">Essential</span></td>
+                    <td>Phase 2</td>
+                </tr>
+                <tr>
+                    <td><a href="https://developer.android.com/develop/ui/compose/tutorial" class="link" target="_blank">Jetpack Compose Tutorial</a></td>
+                    <td>Tutorial</td>
+                    <td><span class="resource-badge resource-badge--essential">Essential</span></td>
+                    <td>Phase 2</td>
+                </tr>
+                <tr>
+                    <td><a href="https://github.com/Goodwy/Gallery" class="link" target="_blank">Goodwy Right Gallery — GitHub</a></td>
+                    <td>Source Code</td>
+                    <td><span class="resource-badge resource-badge--essential">Essential</span></td>
+                    <td>Phase 3</td>
+                </tr>
+                <tr>
+                    <td><a href="https://github.com/Goodwy/Goodwy-Commons" class="link" target="_blank">Goodwy-Commons Library</a></td>
+                    <td>Source Code</td>
+                    <td><span class="resource-badge resource-badge--essential">Essential</span></td>
+                    <td>Phase 3</td>
+                </tr>
+                <tr>
+                    <td><a href="https://developer.android.com/identity/sign-in/credential-manager" class="link" target="_blank">Credential Manager Guide</a></td>
+                    <td>Docs</td>
+                    <td><span class="resource-badge resource-badge--essential">Essential</span></td>
+                    <td>Phase 5</td>
+                </tr>
+                <tr>
+                    <td><a href="https://developers.google.com/drive/api/guides/about-sdk" class="link" target="_blank">Google Drive REST API</a></td>
+                    <td>Docs</td>
+                    <td><span class="resource-badge resource-badge--essential">Essential</span></td>
+                    <td>Phase 5</td>
+                </tr>
+                <tr>
+                    <td><a href="https://developer.android.com/topic/libraries/architecture/workmanager" class="link" target="_blank">WorkManager Guide</a></td>
+                    <td>Docs</td>
+                    <td><span class="resource-badge resource-badge--essential">Essential</span></td>
+                    <td>Phase 6</td>
+                </tr>
+                <tr>
+                    <td><a href="https://kotlinlang.org/docs/coroutines-guide.html" class="link" target="_blank">Kotlin Coroutines Guide</a></td>
+                    <td>Docs</td>
+                    <td><span class="resource-badge resource-badge--recommended">Recommended</span></td>
+                    <td>Phase 2</td>
+                </tr>
+                <tr>
+                    <td><a href="https://developer.android.com/training/dependency-injection/hilt-android" class="link" target="_blank">Hilt Dependency Injection</a></td>
+                    <td>Docs</td>
+                    <td><span class="resource-badge resource-badge--recommended">Recommended</span></td>
+                    <td>Phase 2-3</td>
+                </tr>
+                <tr>
+                    <td><a href="https://developer.android.com/training/data-storage/room" class="link" target="_blank">Room Database Guide</a></td>
+                    <td>Docs</td>
+                    <td><span class="resource-badge resource-badge--recommended">Recommended</span></td>
+                    <td>Phase 2-6</td>
+                </tr>
+                <tr>
+                    <td><a href="https://developer.android.com/training/data-storage/shared/media" class="link" target="_blank">MediaStore API Guide</a></td>
+                    <td>Docs</td>
+                    <td><span class="resource-badge resource-badge--recommended">Recommended</span></td>
+                    <td>Phase 2-3</td>
+                </tr>
+                <tr>
+                    <td><a href="https://developer.android.com/develop/ui/compose/testing" class="link" target="_blank">Compose Testing Guide</a></td>
+                    <td>Docs</td>
+                    <td><span class="resource-badge resource-badge--optional">Optional</span></td>
+                    <td>Phase 7</td>
+                </tr>
+                <tr>
+                    <td><a href="https://play.google.com/store/apps/details?id=dk.tacit.android.foldersync.lite" class="link" target="_blank">FolderSync App (reference)</a></td>
+                    <td>Reference</td>
+                    <td><span class="resource-badge resource-badge--optional">Optional</span></td>
+                    <td>Phase 6</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p class="footer__text">
+            📸 Lenz Development Roadmap · Built with <span class="footer__heart">♥</span> · Last updated July 2026
+        </p>
+    </footer>
+
+    <!-- ==============================
+         JAVASCRIPT
+         ============================== -->
+    <script>
+        // Toggle phase expand/collapse
+        function togglePhase(header) {
+            const card = header.closest('.phase__card');
+            const body = card.querySelector('.phase__body');
+            const icon = card.querySelector('.phase__toggle-icon');
+            const toggle = card.querySelector('.phase__toggle');
+            const isOpen = body.classList.contains('phase__body--open');
+
+            if (isOpen) {
+                body.classList.remove('phase__body--open');
+                icon.classList.remove('phase__toggle-icon--open');
+                toggle.innerHTML = '<span class="phase__toggle-icon">▶</span> View detailed steps';
+            } else {
+                body.classList.add('phase__body--open');
+                icon.classList.add('phase__toggle-icon--open');
+                toggle.innerHTML = '<span class="phase__toggle-icon phase__toggle-icon--open">▶</span> Hide details';
+            }
+        }
+
+        // Copy code blocks
+        function copyCode(btn) {
+            const codeBlock = btn.closest('.code-block');
+            const code = codeBlock.querySelector('code');
+            const text = code.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                btn.textContent = 'Copied!';
+                setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+            });
+        }
+
+        // Reading progress bar
+        window.addEventListener('scroll', () => {
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrolled = window.scrollY;
+            const progress = (scrolled / docHeight) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        });
+
+        // Active nav link on scroll
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav__link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 120;
+                if (window.scrollY >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('nav__link--active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('nav__link--active');
+                }
+            });
+        });
+
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.phase, .overview-card, .tech-item').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
